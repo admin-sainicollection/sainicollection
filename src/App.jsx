@@ -186,9 +186,6 @@ const App = () => {
       <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'}`}>
         <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-12 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
-              <span className="text-white font-bold text-xl">S</span>
-            </div>
             <span className="text-lg sm:text-xl font-bold tracking-tight whitespace-nowrap">SAINI <span className="text-blue-600">COLLECTION</span></span>
           </div>
 
