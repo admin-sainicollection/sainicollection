@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import {
   Code2,
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react';
 
 const App = () => {
+  const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -34,6 +36,27 @@ const App = () => {
 
   const [loading, setLoading] = useState(false);
   const [apiMessage, setApiMessage] = useState('');
+
+  // Scroll to section based on route
+  useEffect(() => {
+    const pathToSectionId = {
+      '/': 'home',
+      '/about': 'about',
+      '/services': 'services',
+      '/tech': 'tech',
+      '/contact': 'contact'
+    };
+
+    const sectionId = pathToSectionId[location.pathname];
+    if (sectionId) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -191,13 +214,13 @@ const App = () => {
 
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-8 text-sm font-medium">
-            <a href="#home" className="hover:text-blue-600 transition-colors">Home</a>
-            <a href="#about" className="hover:text-blue-600 transition-colors">About</a>
-            <a href="#services" className="hover:text-blue-600 transition-colors">Services</a>
-            <a href="#tech" className="hover:text-blue-600 transition-colors">Our Tech</a>
-            <a href="#contact" className="bg-blue-600 text-white px-6 py-2.5 rounded-full hover:bg-blue-700 transition-all shadow-md shadow-blue-200 cursor-pointer inline-block">
+            <Link to="/" className="hover:text-blue-600 transition-colors">Home</Link>
+            <Link to="/about" className="hover:text-blue-600 transition-colors">About</Link>
+            <Link to="/services" className="hover:text-blue-600 transition-colors">Services</Link>
+            <Link to="/tech" className="hover:text-blue-600 transition-colors">Our Tech</Link>
+            <Link to="/contact" className="bg-blue-600 text-white px-6 py-2.5 rounded-full hover:bg-blue-700 transition-all shadow-md shadow-blue-200 cursor-pointer inline-block">
               Get Started
-            </a>
+            </Link>
           </div>
 
           {/* Mobile Toggle */}
@@ -209,11 +232,11 @@ const App = () => {
         {/* Mobile Menu Overlay */}
         {mobileMenuOpen && (
           <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-slate-100 shadow-xl py-6 px-6 flex flex-col gap-4 animate-in fade-in slide-in-from-top-4">
-            <a href="#home" onClick={() => setMobileMenuOpen(false)} className="font-medium text-lg">Home</a>
-            <a href="#about" onClick={() => setMobileMenuOpen(false)} className="font-medium text-lg">About</a>
-            <a href="#services" onClick={() => setMobileMenuOpen(false)} className="font-medium text-lg">Services</a>
-            <a href="#tech" onClick={() => setMobileMenuOpen(false)} className="font-medium text-lg">Our Tech</a>
-            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold block text-center cursor-pointer">Get Started</a>
+            <Link to="/" onClick={() => setMobileMenuOpen(false)} className="font-medium text-lg">Home</Link>
+            <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="font-medium text-lg">About</Link>
+            <Link to="/services" onClick={() => setMobileMenuOpen(false)} className="font-medium text-lg">Services</Link>
+            <Link to="/tech" onClick={() => setMobileMenuOpen(false)} className="font-medium text-lg">Our Tech</Link>
+            <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold block text-center cursor-pointer">Get Started</Link>
           </div>
         )}
       </nav>
@@ -234,12 +257,12 @@ const App = () => {
               Elevate your online presence with high-end tech solutions. From custom websites to robust backend systems, we deliver excellence at scale.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <a href="#services" className="w-full sm:w-auto bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100 cursor-pointer">
+              <Link to="/services" className="w-full sm:w-auto bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100 cursor-pointer">
                 Our Services <ArrowRight className="w-5 h-5" />
-              </a>
-              <a href="#contact" className="w-full sm:w-auto border-2 border-slate-200 px-8 py-4 rounded-xl font-bold hover:border-blue-600 hover:text-blue-600 transition-all bg-white text-center cursor-pointer">
+              </Link>
+              <Link to="/contact" className="w-full sm:w-auto border-2 border-slate-200 px-8 py-4 rounded-xl font-bold hover:border-blue-600 hover:text-blue-600 transition-all bg-white text-center cursor-pointer">
                 Contact Our Team
-              </a>
+              </Link>
             </div>
           </div>
 
