@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Code2, 
-  Layout, 
-  Mail, 
-  Globe, 
-  Smartphone, 
-  Palette, 
-  Database, 
-  Server, 
-  Cpu, 
-  MessageSquare, 
-  CheckCircle2, 
+import axios from 'axios';
+import {
+  Code2,
+  Layout,
+  Mail,
+  Globe,
+  Smartphone,
+  Palette,
+  Database,
+  Server,
+  Cpu,
+  MessageSquare,
+  CheckCircle2,
   ArrowRight,
   Monitor,
   Layers,
@@ -29,7 +30,10 @@ const App = () => {
     message: ''
   });
   const [errors, setErrors] = useState({});
-  const [submitted, setSubmitted] = useState(false);
+  const [, setSubmitted] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+  const [apiMessage, setApiMessage] = useState('');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,9 +43,10 @@ const App = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  console.log("form data-------------->", formData)
   const validateForm = () => {
     const newErrors = {};
-    
+
     // Full Name validation
     if (!formData.fullName.trim()) {
       newErrors.fullName = 'Full Name is required';
@@ -50,26 +55,26 @@ const App = () => {
     } else if (!/^[a-zA-Z\s]+$/.test(formData.fullName)) {
       newErrors.fullName = 'Full Name can only contain letters and spaces';
     }
-    
+
     // Email validation
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
-    
+
     // Service validation
     if (!formData.service.trim()) {
       newErrors.service = 'Please select a service';
     }
-    
+
     // Message validation
     if (!formData.message.trim()) {
       newErrors.message = 'Message is required';
     } else if (formData.message.trim().length < 10) {
       newErrors.message = 'Message must be at least 10 characters';
     }
-    
+
     return newErrors;
   };
 
@@ -88,19 +93,45 @@ const App = () => {
     }
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
-    
-    if (Object.keys(newErrors).length === 0) {
-      setSubmitted(true);
-      // Reset form after 2 seconds
-      setTimeout(() => {
-        setFormData({ fullName: '', email: '', service: '', message: '' });
-        setSubmitted(false);
-      }, 2000);
-    } else {
+
+    if (Object.keys(newErrors).length !== 0) {
       setErrors(newErrors);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setApiMessage('');
+
+      const res = await axios.post(
+        'https://sainicollection-controller-be.onrender.com/sainicollection/v1/api/message',
+        formData
+      );
+
+      if (res?.data?.success) {
+        setSubmitted(true);
+        setApiMessage(res.data.message || 'Message sent successfully');
+
+        // Reset form
+        setFormData({
+          fullName: '',
+          email: '',
+          service: '',
+          message: ''
+        });
+
+      } else {
+        setApiMessage(res.data.message || 'Something went wrong');
+      }
+
+    } catch (error) {
+      console.error('API Error:', error);
+      setApiMessage('Server error. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -193,7 +224,7 @@ const App = () => {
       {/* Hero Section */}
       <section id="home" className="relative w-full pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden flex items-center min-h-[80vh]">
         <div className="absolute top-0 right-0 -z-10 w-full lg:w-3/4 h-full bg-gradient-to-l from-blue-50/50 to-transparent rounded-bl-[100px] lg:rounded-bl-[200px]" />
-        
+
         <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-12 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold">
@@ -214,12 +245,12 @@ const App = () => {
               </a>
             </div>
           </div>
-          
+
           <div className="relative w-full max-w-2xl mx-auto lg:max-w-none">
             <div className="bg-white p-3 sm:p-5 rounded-[2rem] sm:rounded-[3rem] shadow-2xl border border-slate-100 relative z-10 overflow-hidden">
-              <img 
-                src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1200" 
-                alt="Development Workspace" 
+              <img
+                src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1200"
+                alt="Development Workspace"
                 className="rounded-2xl sm:rounded-[2rem] w-full h-auto object-cover"
               />
               <div className="absolute -bottom-4 -left-4 sm:bottom-8 sm:left-8 bg-white p-4 sm:p-6 rounded-2xl shadow-xl border border-slate-50 hidden sm:block">
@@ -271,7 +302,7 @@ const App = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-blue-600 p-8 sm:p-12 rounded-[2.5rem] shadow-xl text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl" />
               <h3 className="text-2xl sm:text-3xl font-bold mb-6">Our Mission</h3>
@@ -374,7 +405,7 @@ const App = () => {
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold">Voices of <span className="text-blue-600">Our Clients</span></h2>
             <p className="text-slate-600 text-lg mt-6 max-w-2xl mx-auto">Hear from people who trust us with their vision and digital transformation.</p>
           </div>
-          
+
           <div className="max-w-4xl mx-auto">
             <div className="bg-white p-10 sm:p-16 rounded-[2.5rem] shadow-lg border border-slate-100 hover:shadow-2xl transition-all duration-300">
               <div className="flex text-yellow-400 mb-8 gap-1">
@@ -405,7 +436,7 @@ const App = () => {
               <div className="relative z-10">
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8">Let's Connect</h2>
                 <p className="mb-12 text-lg lg:text-xl opacity-80 leading-relaxed">Ready to start your next big digital project? Fill out the form or reach out directly.</p>
-                
+
                 <div className="space-y-10">
                   <div className="flex items-start gap-6">
                     <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center shrink-0 border border-white/10">
@@ -448,38 +479,36 @@ const App = () => {
 
             <div className="lg:col-span-3 p-8 sm:p-12 lg:p-16 flex flex-col justify-center">
               <h3 className="text-2xl sm:text-3xl font-bold mb-10">Send us a Message</h3>
-              {submitted && (
+              {apiMessage && (
                 <div className="bg-green-50 border-2 border-green-500 text-green-700 p-4 rounded-2xl mb-8 font-semibold">
-                  ✓ Thank you! Your message has been sent successfully.
+                  {apiMessage}
                 </div>
               )}
               <form className="space-y-8" onSubmit={handleFormSubmit}>
                 <div className="grid sm:grid-cols-2 gap-8">
                   <div className="space-y-3">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Full Name</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       name="fullName"
                       value={formData.fullName}
                       onChange={handleFormChange}
-                      placeholder="John Doe" 
-                      className={`w-full bg-slate-50 border-2 rounded-2xl p-5 focus:bg-white focus:ring-0 outline-none transition-all text-lg ${
-                        errors.fullName ? 'border-red-500' : 'border-transparent focus:border-blue-600'
-                      }`} 
+                      placeholder="John Doe"
+                      className={`w-full bg-slate-50 border-2 rounded-2xl p-5 focus:bg-white focus:ring-0 outline-none transition-all text-lg ${errors.fullName ? 'border-red-500' : 'border-transparent focus:border-blue-600'
+                        }`}
                     />
                     {errors.fullName && <p className="text-red-500 text-sm font-semibold">{errors.fullName}</p>}
                   </div>
                   <div className="space-y-3">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Email Address</label>
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleFormChange}
-                      placeholder="connect@sainicollection.com" 
-                      className={`w-full bg-slate-50 border-2 rounded-2xl p-5 focus:bg-white focus:ring-0 outline-none transition-all text-lg ${
-                        errors.email ? 'border-red-500' : 'border-transparent focus:border-blue-600'
-                      }`} 
+                      placeholder="connect@sainicollection.com"
+                      className={`w-full bg-slate-50 border-2 rounded-2xl p-5 focus:bg-white focus:ring-0 outline-none transition-all text-lg ${errors.email ? 'border-red-500' : 'border-transparent focus:border-blue-600'
+                        }`}
                     />
                     {errors.email && <p className="text-red-500 text-sm font-semibold">{errors.email}</p>}
                   </div>
@@ -487,13 +516,12 @@ const App = () => {
                 <div className="space-y-3">
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Service Needed</label>
                   <div className="relative">
-                    <select 
+                    <select
                       name="service"
                       value={formData.service}
                       onChange={handleFormChange}
-                      className={`w-full bg-slate-50 border-2 rounded-2xl p-5 focus:bg-white focus:ring-0 outline-none transition-all appearance-none cursor-pointer text-lg ${
-                        errors.service ? 'border-red-500' : 'border-transparent focus:border-blue-600'
-                      }`}
+                      className={`w-full bg-slate-50 border-2 rounded-2xl p-5 focus:bg-white focus:ring-0 outline-none transition-all appearance-none cursor-pointer text-lg ${errors.service ? 'border-red-500' : 'border-transparent focus:border-blue-600'
+                        }`}
                     >
                       <option value="">-- Select a Service --</option>
                       <option value="Web Design & UX">Web Design & UX</option>
@@ -509,23 +537,28 @@ const App = () => {
                 </div>
                 <div className="space-y-3">
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Your Message</label>
-                  <textarea 
+                  <textarea
                     name="message"
                     value={formData.message}
                     onChange={handleFormChange}
-                    rows="5" 
-                    placeholder="Tell us about your project requirements..." 
-                    className={`w-full bg-slate-50 border-2 rounded-2xl p-5 focus:bg-white focus:ring-0 outline-none transition-all resize-none text-lg ${
-                      errors.message ? 'border-red-500' : 'border-transparent focus:border-blue-600'
-                    }`}
+                    rows="5"
+                    placeholder="Tell us about your project requirements..."
+                    className={`w-full bg-slate-50 border-2 rounded-2xl p-5 focus:bg-white focus:ring-0 outline-none transition-all resize-none text-lg ${errors.message ? 'border-red-500' : 'border-transparent focus:border-blue-600'
+                      }`}
                   ></textarea>
                   {errors.message && <p className="text-red-500 text-sm font-semibold">{errors.message}</p>}
                 </div>
-                <button 
+                <button
                   type="submit"
-                  className="w-full bg-blue-600 text-white font-bold py-6 rounded-2xl hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 flex items-center justify-center gap-3 text-lg cursor-pointer"
+                  disabled={loading}
+                  className={`w-full font-bold py-6 rounded-2xl transition-all flex items-center justify-center gap-3 text-lg 
+    ${loading
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-100 cursor-pointer text-white'
+                    }`}
                 >
-                  Submit Proposal <Mail className="w-6 h-6" />
+                  {loading ? 'Sending...' : 'Submit Proposal'}
+                  {!loading && <Mail className="w-6 h-6" />}
                 </button>
               </form>
             </div>
@@ -553,7 +586,7 @@ const App = () => {
                 <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center hover:bg-blue-600 cursor-pointer transition-all"><Smartphone className="w-5 h-5" /></div>
               </div>
             </div>
-            
+
             <div>
               <h4 className="font-bold text-xl mb-8">Services</h4>
               <ul className="space-y-5 text-slate-400 text-lg">
@@ -583,7 +616,7 @@ const App = () => {
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-slate-900 pt-10 text-center text-sm text-slate-500">
             <p className="font-medium tracking-wide">© 2024 SAINI COLLECTION. ALL RIGHTS RESERVED.</p>
           </div>
