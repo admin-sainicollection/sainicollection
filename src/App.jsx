@@ -200,7 +200,7 @@ const App = () => {
       desc: "Crafting unique identities with Figma, Photoshop, and Illustrator for posters and digital assets.",
       icon: <Palette className="w-8 h-8 text-blue-600" />,
       tags: ["Figma", "Branding", "Visual Design"]
-    }
+    },
   ];
 
   return (
@@ -548,6 +548,7 @@ const App = () => {
                       <option value="Frontend Development (React)">Frontend Development (React)</option>
                       <option value="Full Stack Systems">Full Stack Systems</option>
                       <option value="E-commerce Solution">E-commerce Solution</option>
+                      <option value="Others">Others</option>
                     </select>
                     <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
                       <ArrowRight className="rotate-90 w-5 h-5" />
