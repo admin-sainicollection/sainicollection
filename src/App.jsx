@@ -639,7 +639,7 @@ const App = () => {
           </div>
 
           <div className="border-t border-slate-900 pt-10 text-center text-sm text-slate-500">
-            <p className="font-medium tracking-wide">© 2024 SAINI COLLECTION. ALL RIGHTS RESERVED.</p>
+            <p className="font-medium tracking-wide">© 2026 SAINI COLLECTION. ALL RIGHTS RESERVED.</p>
           </div>
         </div>
       </footer>
